@@ -1,9 +1,9 @@
-import { APIGatewayRequestAuthorizerHandler } from "aws-lambda";
+import { APIGatewayRequestAuthorizerHandler, APIGatewayAuthorizerResult } from "aws-lambda";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 
-export const handler: APIGatewayRequestAuthorizerHandler = async (event) => {
+export const handler: APIGatewayRequestAuthorizerHandler = async (event): Promise<APIGatewayAuthorizerResult> => {
   console.log("[EVENT]", event);
   try {
     const cookieHeader = event.headers?.cookie || event.headers?.Cookie;
@@ -35,11 +35,11 @@ export const handler: APIGatewayRequestAuthorizerHandler = async (event) => {
 };
 
 const allowPolicy = (methodArn: string) => ({
-  Version: "2012-10-17",
-  Statement: [{ Effect: "Allow", Action: "execute-api:Invoke", Resource: [methodArn] }],
+  Version: "2012-10-17" as const,
+  Statement: [{ Effect: "Allow" as const, Action: "execute-api:Invoke", Resource: [methodArn] }],
 });
 
 const denyPolicy = (methodArn: string) => ({
-  Version: "2012-10-17",
-  Statement: [{ Effect: "Deny", Action: "execute-api:Invoke", Resource: [methodArn] }],
+  Version: "2012-10-17" as const,
+  Statement: [{ Effect: "Deny" as const, Action: "execute-api:Invoke", Resource: [methodArn] }],
 });
